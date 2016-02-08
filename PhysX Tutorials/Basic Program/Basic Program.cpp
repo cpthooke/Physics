@@ -116,7 +116,9 @@ int main()
 	InitScene();
 
 	//set the simulation step to 1/60th of a second
-	PxReal delta_time = 1.f/60.f;
+	PxReal delta_time = 1.f/30.f;
+
+	//cout << box->getMass() << "\n"; //Displays box/object mass.
 
 	//simulate until the 'Esc' is pressed
 	while (!GetAsyncKeyState(VK_ESCAPE))
@@ -134,6 +136,11 @@ int main()
 		
 		//introduce 100ms delay for easier visual analysis of the results
 		Sleep(100);
+		if (box->isSleeping())
+		{
+			cout << "asleep\n";
+			system("PAUSE");
+		}
 	}
 
 	//Release all resources
