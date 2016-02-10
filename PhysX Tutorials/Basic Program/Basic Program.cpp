@@ -14,7 +14,10 @@ debugger::comm::PvdConnection* vd_connection;
 //simulation objects
 PxScene* scene;
 PxRigidDynamic* box;
+PxRigidDynamic* box2;
+//PxRigidStatic* box2;
 PxRigidStatic* plane;
+PxRigidDynamic* boxes[3];
 
 ///Initialise PhysX objects
 bool PxInit()
@@ -80,19 +83,39 @@ void InitScene()
 	scene->setGravity(PxVec3(0.f, -9.81f, 0.f));
 
 	//materials
-	PxMaterial* default_material = physics->createMaterial(0.f, 0.f, 0.f);   //static friction, dynamic friction, restitution
+	PxMaterial* default_material = physics->createMaterial(0.f, 0.f, 0.5f);   //static friction, dynamic friction, restitution
 
 	//create a static plane (XZ)
 	plane = PxCreatePlane(*physics, PxPlane(PxVec3(0.f, 1.f, 0.f), 0.f), *default_material);
 	scene->addActor(*plane);
 
 	//create a dynamic actor and place it 10 m above the ground
-	box = physics->createRigidDynamic(PxTransform(PxVec3(0.f, 10.f, 0.f)));
+	box = physics->createRigidDynamic(PxTransform(PxVec3(0.5f, 10.f, 0.f)));
 	//create a box shape of 1m x 1m x 1m size (values are provided in halves)
 	box->createShape(PxBoxGeometry(.5f, .5f, .5f), *default_material);
+	//box->createShape(PxSphereGeometry(.5f), *default_material);
 	//update the mass of the box
 	PxRigidBodyExt::updateMassAndInertia(*box, 1.f); //density of 1kg/m^3
 	scene->addActor(*box);
+
+	for (int i = 0; i < (sizeof(boxes) / sizeof(*boxes)); i++)
+	{
+		boxes[i] = physics->createRigidDynamic(PxTransform(PxVec3(((i * 5.f) - 5.f), 1.f, 0.f)));
+		boxes[i]->createShape(PxBoxGeometry(.5f, .5f, .5f), *default_material);
+		PxRigidBodyExt::updateMassAndInertia(*boxes[i], 1.f); //density of 1kg/m^3
+		scene->addActor(*boxes[i]);
+	}
+
+	//Dynamic box2.
+	//box2 = physics->createRigidDynamic(PxTransform(PxVec3(f, 1.f, 0.f)));
+	//box2->createShape(PxBoxGeometry(.5f, .5f, .5f), *default_material);
+	//PxRigidBodyExt::updateMassAndInertia(*box2, 1.f); //density of 1kg/m^3
+	//scene->addActor(*box2);
+
+	//Static box.
+	//box2 = physics->createRigidStatic(PxTransform(PxVec3(0.f, 0.f, 0.f)));
+	//box2->createShape(PxBoxGeometry(.5f, .5f, .5f), *default_material);
+	//scene->addActor(*box2);
 }
 
 /// Perform a single simulation step
@@ -116,10 +139,13 @@ int main()
 	InitScene();
 
 	//set the simulation step to 1/60th of a second
-	PxReal delta_time = 1.f/30.f;
+	PxReal delta_time = 1.f/20.f;
 
-	//cout << box->getMass() << "\n"; //Displays box/object mass.
+	//Makes actor kinematic.
+	//box->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
 
+	//Displays box/object mass.
+	//cout << box->getMass() << "\n"; 
 	//simulate until the 'Esc' is pressed
 	while (!GetAsyncKeyState(VK_ESCAPE))
 	{
