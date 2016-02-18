@@ -122,4 +122,17 @@ namespace PhysicsEngine
 			return GetPhysics()->createTriangleMesh(input);
 		}
 	};
+
+	///The Compound Object Class (Workshop 2.2.1)
+	class CompoundObject : public DynamicActor
+	{
+	public:
+		CompoundObject(const PxTransform& pose = PxTransform(PxIdentity), PxVec3 dimensions = PxVec3(.5f, .5f, .5f), PxReal density = 1.f) : DynamicActor(pose)
+		{
+			CreateShape(PxBoxGeometry(dimensions), density);
+			CreateShape(PxBoxGeometry(dimensions), density);
+			GetShape(0)->setLocalPose(PxTransform(PxVec3(1.f, 0.f, 0.f)));
+			GetShape(1)->setLocalPose(PxTransform(PxVec3(-1.f, 0.f, 0.f)));
+		}
+	};
 }

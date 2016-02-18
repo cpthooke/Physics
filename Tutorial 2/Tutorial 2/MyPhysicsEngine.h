@@ -43,6 +43,7 @@ namespace PhysicsEngine
 		Box* box;
 		Sphere* sphere1;
 		Capsule* capsule1;
+		CompoundObject* compound1;
 
 	public:
 		///A custom scene class
@@ -65,7 +66,7 @@ namespace PhysicsEngine
 			plane->Color(PxVec3(210.f / 255.f, 210.f / 255.f, 210.f / 255.f));
 			Add(plane);
 
-			box = new Box(PxTransform(PxVec3(.0f,10.f,.0f)));
+			box = new Box(PxTransform(PxVec3(5.f, 2.f, .0f), PxQuat((PxPi/4), PxVec3(1.0f, .0f, 0.f))));
 			box->Color(color_palette[0]);
 			Add(box);
 
@@ -76,6 +77,11 @@ namespace PhysicsEngine
 			capsule1 = new Capsule(PxTransform(PxVec3(10.f, 10.f, 0.f)));
 			capsule1->Color(PxVec3(0.f / 255.f, 163.f / 255.f, 136.f / 255.f));
 			Add(capsule1);
+
+			compound1 = new CompoundObject();
+			compound1->Color(PxVec3(63.f / 255.f, 4.f / 255.f, 82.f / 255.f), 0);
+			compound1->Color(PxVec3(6.f / 255.f, 12.f / 255.f, 185.f / 255.f), 1);
+			Add(compound1);
 		}
 
 		//Custom udpate function
