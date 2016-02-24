@@ -66,7 +66,7 @@ namespace PhysicsEngine
 			plane->Color(PxVec3(210.f / 255.f, 210.f / 255.f, 210.f / 255.f));
 			Add(plane);
 
-			box = new Box(PxTransform(PxVec3(5.f, 2.f, .0f), PxQuat((PxPi/4), PxVec3(1.0f, .0f, 0.f))));
+			box = new Box(PxTransform(PxVec3(5.f, 2.0f, 1.0f), PxQuat((PxPi/4), PxVec3(0.0f, 0.0f, 1.0f))));
 			box->Color(color_palette[0]);
 			Add(box);
 
@@ -87,6 +87,7 @@ namespace PhysicsEngine
 		//Custom udpate function
 		virtual void CustomUpdate() 
 		{
+			box->Update();
 		}
 	};
 }

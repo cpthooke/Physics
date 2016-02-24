@@ -36,6 +36,7 @@ namespace PhysicsEngine
 	///Box class
 	class Box : public DynamicActor
 	{
+		PxReal angle;
 	public:
 		//a Box with default parameters:
 		// - pose in 0,0,0
@@ -44,7 +45,16 @@ namespace PhysicsEngine
 		Box(const PxTransform& pose=PxTransform(PxIdentity), PxVec3 dimensions=PxVec3(.5f,.5f,.5f), PxReal density=1.f) 
 			: DynamicActor(pose)
 		{ 
+			angle = 0.0f;
 			CreateShape(PxBoxGeometry(dimensions), density);
+		}
+
+		void Update() //Rotation update. Can be copy and pasted into other classes.
+		{
+			angle += 1.0f;
+			PxTransform pose = ((PxRigidBody*)Get())->getGlobalPose(); //Global = whole object, local = individual box (e.g. in compound objects)
+			pose.q = PxQuat(angle * 0.01745329252f, PxVec3(0.0f, 1.0f, 0.0f)); //Rotates box based on radians
+			((PxRigidBody*)Get())->setGlobalPose(pose);
 		}
 	};
 
