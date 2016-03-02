@@ -56,12 +56,12 @@ namespace VisualDebugger
 		scene->Init();
 
 		///Init renderer
-		Renderer::BackgroundColor(PxVec3(150.f/255.f,150.f/255.f,150.f/255.f));
+		Renderer::BackgroundColor(PxVec3(150.f / 255.f, 150.f / 255.f, 150.f / 255.f));
 		Renderer::SetRenderDetail(40);
 		Renderer::InitWindow(window_name, width, height);
 		Renderer::Init();
 
-		camera = new Camera(PxVec3(0.0f, 5.0f, 15.0f), PxVec3(0.f,-.1f,-1.f), 5.f);
+		camera = new Camera(PxVec3(0.0f, 100.0f, 0.0f), PxVec3(0.f, -1.0f, -0.1f), 25.f);
 
 		//initialise HUD
 		HUDInit();
