@@ -48,6 +48,16 @@ namespace PhysicsEngine
 		}
 	};
 
+	class TopWall : public StaticActor
+	{
+	public:
+		TopWall(const PxTransform& pose = PxTransform(PxIdentity), PxVec3 dimensions = PxVec3(51.0f, 2.5f, 1.0f), PxReal density = 1.f)
+			: StaticActor(pose)
+		{
+			CreateShape(PxBoxGeometry(dimensions), density);
+		}
+	};
+
 	class Capsule : public DynamicActor
 	{
 	public:
@@ -58,15 +68,15 @@ namespace PhysicsEngine
 		}
 	};
 
-	class CompoundObject : public DynamicActor
+	class SideWalls : public StaticActor
 	{
 	public:
-		CompoundObject(const PxTransform& pose = PxTransform(PxIdentity), PxVec3 dimensions = PxVec3(1.0f, 2.5f, 50.0f), PxReal density = 1.f) : DynamicActor(pose)
+		SideWalls(const PxTransform& pose = PxTransform(PxIdentity), PxVec3 dimensions = PxVec3(1.0f, 2.5f, 50.0f), PxReal density = 1.f) : StaticActor(pose)
 		{
 			CreateShape(PxBoxGeometry(dimensions), density);
 			CreateShape(PxBoxGeometry(dimensions), density);
-			GetShape(0)->setLocalPose(PxTransform(PxVec3(-50.0f, 2.6f, -15.0f)));
-			GetShape(1)->setLocalPose(PxTransform(PxVec3(50.0f, 2.6f, -15.0f)));
+			GetShape(0)->setLocalPose(PxTransform(PxVec3(-50.0f, 2.5f, -15.0f)));
+			GetShape(1)->setLocalPose(PxTransform(PxVec3(50.0f, 2.5f, -15.0f)));
 		}
 	};
 

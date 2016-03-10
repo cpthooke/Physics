@@ -183,7 +183,8 @@ namespace PhysicsEngine
 	{
 		Plane* plane;
 		Box* box2;
-		CompoundObject* sideWalls;
+		SideWalls* sideWalls;
+		TopWall* topWall;
 		MySimulationEventCallback* my_callback;
 		
 	public:
@@ -213,17 +214,15 @@ namespace PhysicsEngine
 			plane->Color(PxVec3(210.f / 255.f, 210.f / 255.f, 210.f / 255.f));
 			Add(plane);
 
-			sideWalls = new CompoundObject();
-			sideWalls->Color(PxVec3(63.f / 255.f, 4.f / 255.f, 82.f / 255.f), 0);
-			sideWalls->Color(PxVec3(6.f / 255.f, 12.f / 255.f, 185.f / 255.f), 1);
-			//set collision filter flags
-			// box->SetupFiltering(FilterGroup::ACTOR0, FilterGroup::ACTOR1);
-			//use | operator to combine more actors e.g.
-			// box->SetupFiltering(FilterGroup::ACTOR0, FilterGroup::ACTOR1 | FilterGroup::ACTOR2);
-			//don't forget to set your flags for the matching actor as well, e.g.:
-			// box2->SetupFiltering(FilterGroup::ACTOR1, FilterGroup::ACTOR0);
-			//sideWalls->Name("Left Wall");
+			sideWalls = new SideWalls();
+			sideWalls->Color(PxVec3(0.0f / 255.0f, 250.0f / 255.0f, 140.0f / 255.0f));
+			sideWalls->Name("Side Wall");
 			Add(sideWalls);
+
+			topWall = new TopWall(PxTransform(PxVec3(0.0f, 2.5f, -65.0f)));
+			topWall->Color(PxVec3(0.0f / 255.0f, 250.0f / 255.0f, 140.0f / 255.0f));
+			topWall->Name("Top Wall");
+			Add(topWall);
 
 			/*
 			//joint two boxes together
