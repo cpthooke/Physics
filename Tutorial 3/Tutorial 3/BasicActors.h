@@ -58,6 +58,18 @@ namespace PhysicsEngine
 		}
 	};
 
+	class CompoundObject : public DynamicActor
+	{
+	public:
+		CompoundObject(const PxTransform& pose = PxTransform(PxIdentity), PxVec3 dimensions = PxVec3(1.0f, 2.5f, 50.0f), PxReal density = 1.f) : DynamicActor(pose)
+		{
+			CreateShape(PxBoxGeometry(dimensions), density);
+			CreateShape(PxBoxGeometry(dimensions), density);
+			GetShape(0)->setLocalPose(PxTransform(PxVec3(-50.0f, 2.6f, -15.0f)));
+			GetShape(1)->setLocalPose(PxTransform(PxVec3(50.0f, 2.6f, -15.0f)));
+		}
+	};
+
 	///The ConvexMesh class
 	class ConvexMesh : public DynamicActor
 	{
