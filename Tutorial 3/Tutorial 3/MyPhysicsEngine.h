@@ -186,6 +186,9 @@ namespace PhysicsEngine
 		SideWalls* sideWalls;
 		TopWall* topWall;
 		MySimulationEventCallback* my_callback;
+		Capsule* paddle;
+		Sphere* ball;
+		Fans* fan_l, fan_r;
 		
 	public:
 		//specify your custom filter shader here
@@ -224,12 +227,18 @@ namespace PhysicsEngine
 			topWall->Name("Top Wall");
 			Add(topWall);
 
-			/*
-			//joint two boxes together
-			//the joint is fixed to the centre of the first box, oriented by 90 degrees around the Y axis
-			//and has the second object attached 5 meters away along the Y axis from the first object.
-			RevoluteJoint joint(box, PxTransform(PxVec3(0.f,0.f,0.f),PxQuat(PxPi/2,PxVec3(0.f,1.f,0.f))), box2, PxTransform(PxVec3(0.f,5.f,0.f)));
-			*/
+			ball = new Sphere(PxTransform(PxVec3(0.0f, 1.0f, -35.0f)));
+			ball->Color(PxVec3(120.0f / 255.0f, 50.0f / 255.0f, 235.0f / 255.0f));
+			ball->Name("Puck");
+			Add(ball);
+
+
+
+			///Paddle movement
+			/*paddle = new Capsule(PxTransform(glutMouseFunc(VisualDebugger.mouseCallBack));
+			paddle->Color(PxVec3(200.0f / 255.0f, 180.0f / 255.0f, 50.0f / 255.0f));
+			paddle->Name("Player Paddle");
+			Add(paddle);*/
 		}
 
 		//Custom udpate function

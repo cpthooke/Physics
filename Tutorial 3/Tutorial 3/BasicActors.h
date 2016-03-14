@@ -22,11 +22,7 @@ namespace PhysicsEngine
 	class Sphere : public DynamicActor
 	{
 	public:
-		//a sphere with default parameters:
-		// - pose in 0,0,0
-		// - dimensions: 1m
-		// - denisty: 1kg/m^3
-		Sphere(const PxTransform& pose=PxTransform(PxIdentity), PxReal radius=1.f, PxReal density=1.f) 
+		Sphere(const PxTransform& pose=PxTransform(PxIdentity), PxReal radius=3.0f, PxReal density=1.f) 
 			: DynamicActor(pose)
 		{ 
 			CreateShape(PxSphereGeometry(radius), density);
@@ -77,6 +73,26 @@ namespace PhysicsEngine
 			CreateShape(PxBoxGeometry(dimensions), density);
 			GetShape(0)->setLocalPose(PxTransform(PxVec3(-50.0f, 2.5f, -15.0f)));
 			GetShape(1)->setLocalPose(PxTransform(PxVec3(50.0f, 2.5f, -15.0f)));
+		}
+	};
+
+	class Fans : public StaticActor
+	{
+		PxReal angle;
+	public :
+		Fans(const PxTransform& pose = PxTransform(PxIdentity), PxVec2 dimensions = PxVec2(3.0f, 3.0f), PxReal density = 1.0f) : StaticActor(pose)
+		{
+			angle = 0.0f;
+			CreateShape(PxCapsuleGeometry(dimensions.x, dimensions.y), density);
+			CreateShape(PxCapsuleGeometry(dimensions.x, dimensions.y), density);
+		}
+
+		void Update() //Rotation update. Can be copy and pasted into other classes.
+		{
+			angle += 1.0f;
+			PxTransform pose = ((PxRigidBody*)Get())->getGlobalPose(); //Global = whole object, local = individual box (e.g. in compound objects)
+			pose.q = PxQuat(angle * 0.01745329252f, PxVec3(0.0f, 1.0f, 0.0f)); //Rotates box based on radians
+			((PxRigidBody*)Get())->setGlobalPose(pose);
 		}
 	};
 
