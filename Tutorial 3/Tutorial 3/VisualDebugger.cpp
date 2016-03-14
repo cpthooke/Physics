@@ -40,7 +40,7 @@ namespace VisualDebugger
 	Camera* camera;
 	PhysicsEngine::MyScene* scene;
 	PxReal delta_time = 1.f/60.f;
-	PxReal gForceStrength = 20;
+	PxReal gForceStrength = 1000;
 	RenderMode render_mode = NORMAL;
 	const int MAX_KEYS = 256;
 	bool key_state[MAX_KEYS];
@@ -61,7 +61,7 @@ namespace VisualDebugger
 		Renderer::InitWindow(window_name, width, height);
 		Renderer::Init();
 
-		camera = new Camera(PxVec3(0.0f, 100.0f, 0.0f), PxVec3(0.f, -1.0f, -0.1f), 25.f);
+		camera = new Camera(PxVec3(0.0f, 100.0f, -20.0f), PxVec3(0.f, -1.0f, -0.1f), 25.f);
 
 		//initialise HUD
 		HUDInit();

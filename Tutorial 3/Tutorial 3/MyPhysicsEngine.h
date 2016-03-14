@@ -181,14 +181,16 @@ namespace PhysicsEngine
 	///Custom scene class
 	class MyScene : public Scene
 	{
-		Plane* plane;
 		Box* box2;
-		SideWalls* sideWalls;
-		TopWall* topWall;
-		MySimulationEventCallback* my_callback;
 		Capsule* paddle;
+		Fans* fan_l;
+		Fans* fan_r;
+		MySimulationEventCallback* my_callback;
+		Plane* plane;
+		PxMaterial* wallMaterial;
+		SideWalls* sideWalls;
 		Sphere* ball;
-		Fans* fan_l, fan_r;
+		TopWall* topWall;
 		
 	public:
 		//specify your custom filter shader here
@@ -217,13 +219,17 @@ namespace PhysicsEngine
 			plane->Color(PxVec3(210.f / 255.f, 210.f / 255.f, 210.f / 255.f));
 			Add(plane);
 
+			wallMaterial = CreateMaterial(0.0f, 0.0f, 1.0f);
+
 			sideWalls = new SideWalls();
 			sideWalls->Color(PxVec3(0.0f / 255.0f, 250.0f / 255.0f, 140.0f / 255.0f));
+			sideWalls->Material(wallMaterial);
 			sideWalls->Name("Side Wall");
 			Add(sideWalls);
 
 			topWall = new TopWall(PxTransform(PxVec3(0.0f, 2.5f, -65.0f)));
 			topWall->Color(PxVec3(0.0f / 255.0f, 250.0f / 255.0f, 140.0f / 255.0f));
+			topWall->Material(wallMaterial);
 			topWall->Name("Top Wall");
 			Add(topWall);
 
@@ -232,10 +238,24 @@ namespace PhysicsEngine
 			ball->Name("Puck");
 			Add(ball);
 
+			fan_l = new Fans(PxTransform(PxVec3(-60.0f, 2.5f, -65.0f)));
+			fan_l->Color(PxVec3(76.0f / 255.0f, 0.0f / 255.0f, 153.0f / 255.0f), 0);
+			fan_l->Color(PxVec3(204.0f / 255.0f, 204.0f / 255.0f, 0.0f / 255.0f), 1);
+			RevoluteJoint* motorJoint_l = new RevoluteJoint(NULL, PxTransform(PxVec3(-40.0f, 10.0f, -75.0f), PxQuat(PxPi / 2, PxVec3(0.0f, 0.0f, 1.0f))), fan_l, PxTransform(PxVec3(0.0f, 0.0f, 0.0f), PxQuat(PxPi / 2, PxVec3(0.0f, 0.0f, 1.0f))));
+			motorJoint_l->DriveVelocity(PxReal(-1));
+			fan_l->Name("Left Fan");
+			Add(fan_l);
 
+			fan_r = new Fans(PxTransform(PxVec3(-60.0f, 2.5f, -65.0f)));
+			fan_r->Color(PxVec3(76.0f / 255.0f, 0.0f / 255.0f, 153.0f / 255.0f), 0);
+			fan_r->Color(PxVec3(204.0f / 255.0f, 204.0f / 255.0f, 0.0f / 255.0f), 1);
+			RevoluteJoint* motorJoint_r = new RevoluteJoint(NULL, PxTransform(PxVec3(40.0f, 10.0f, -75.0f), PxQuat(PxPi / 2, PxVec3(0.0f, 0.0f, 1.0f))), fan_r, PxTransform(PxVec3(0.0f, 0.0f, 0.0f), PxQuat(PxPi / 2, PxVec3(0.0f, 0.0f, 1.0f))));
+			motorJoint_r->DriveVelocity(PxReal(1));
+			fan_r->Name("Right Fan");
+			Add(fan_r);
 
 			///Paddle movement
-			/*paddle = new Capsule(PxTransform(glutMouseFunc(VisualDebugger.mouseCallBack));
+			/*paddle = new Capsule(PxTransform((VisualDebugger.mouseCallBack));
 			paddle->Color(PxVec3(200.0f / 255.0f, 180.0f / 255.0f, 50.0f / 255.0f));
 			paddle->Name("Player Paddle");
 			Add(paddle);*/
@@ -249,7 +269,7 @@ namespace PhysicsEngine
 		/// An example use of key release handling
 		void ExampleKeyReleaseHandler()
 		{
-			cerr << "I am realeased!" << endl;
+			cerr << "I am released!" << endl;
 		}
 
 		/// An example use of key presse handling

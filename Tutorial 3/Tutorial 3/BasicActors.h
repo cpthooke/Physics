@@ -44,16 +44,6 @@ namespace PhysicsEngine
 		}
 	};
 
-	class TopWall : public StaticActor
-	{
-	public:
-		TopWall(const PxTransform& pose = PxTransform(PxIdentity), PxVec3 dimensions = PxVec3(51.0f, 2.5f, 1.0f), PxReal density = 1.f)
-			: StaticActor(pose)
-		{
-			CreateShape(PxBoxGeometry(dimensions), density);
-		}
-	};
-
 	class Capsule : public DynamicActor
 	{
 	public:
@@ -61,6 +51,16 @@ namespace PhysicsEngine
 			: DynamicActor(pose)
 		{
 			CreateShape(PxCapsuleGeometry(dimensions.x, dimensions.y), density);
+		}
+	};
+
+	class TopWall : public StaticActor
+	{
+	public:
+		TopWall(const PxTransform& pose = PxTransform(PxIdentity), PxVec3 dimensions = PxVec3(51.0f, 2.5f, 1.0f), PxReal density = 1.f)
+			: StaticActor(pose)
+		{
+			CreateShape(PxBoxGeometry(dimensions), density);
 		}
 	};
 
@@ -76,23 +76,14 @@ namespace PhysicsEngine
 		}
 	};
 
-	class Fans : public StaticActor
+	class Fans : public DynamicActor
 	{
-		PxReal angle;
 	public :
-		Fans(const PxTransform& pose = PxTransform(PxIdentity), PxVec2 dimensions = PxVec2(3.0f, 3.0f), PxReal density = 1.0f) : StaticActor(pose)
+		Fans(const PxTransform& pose = PxTransform(PxIdentity), PxVec2 dimensions = PxVec2(3.0f, 3.0f), PxReal density = 1.0f) : DynamicActor(pose)
 		{
-			angle = 0.0f;
 			CreateShape(PxCapsuleGeometry(dimensions.x, dimensions.y), density);
 			CreateShape(PxCapsuleGeometry(dimensions.x, dimensions.y), density);
-		}
-
-		void Update() //Rotation update. Can be copy and pasted into other classes.
-		{
-			angle += 1.0f;
-			PxTransform pose = ((PxRigidBody*)Get())->getGlobalPose(); //Global = whole object, local = individual box (e.g. in compound objects)
-			pose.q = PxQuat(angle * 0.01745329252f, PxVec3(0.0f, 1.0f, 0.0f)); //Rotates box based on radians
-			((PxRigidBody*)Get())->setGlobalPose(pose);
+			GetShape(0)->setLocalPose(PxTransform(PxVec3(0.0f, 0.0f, 0.0f), PxQuat(PxPi / 2, PxVec3(0.0f, 1.0f, 0.0f))));
 		}
 	};
 
