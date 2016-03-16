@@ -91,6 +91,7 @@ namespace PhysicsEngine
 	public:
 		//an example variable that will be checked in the main simulation loop
 		bool trigger;
+		int score = 0;
 
 		MySimulationEventCallback() : trigger(false) {}
 
@@ -108,6 +109,7 @@ namespace PhysicsEngine
 					{
 						cerr << "onTrigger::eNOTIFY_TOUCH_FOUND" << endl;
 						trigger = true;
+						
 					}
 					//check if eNOTIFY_TOUCH_LOST trigger
 					if (pairs[i].status & PxPairFlag::eNOTIFY_TOUCH_LOST)
@@ -118,7 +120,7 @@ namespace PhysicsEngine
 				}
 			}
 		}
-
+		bool collisionCheck;
 		///Method called when the contact by the filter shader is detected.
 		virtual void onContact(const PxContactPairHeader &pairHeader, const PxContactPair *pairs, PxU32 nbPairs) 
 		{
@@ -131,11 +133,15 @@ namespace PhysicsEngine
 				if (pairs[i].events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
 				{
 					cerr << "onContact::eNOTIFY_TOUCH_FOUND" << endl;
+					collisionCheck = true;
+					score++;
+					std::cout << score << std::endl;
 				}
 				//check eNOTIFY_TOUCH_LOST
 				if (pairs[i].events & PxPairFlag::eNOTIFY_TOUCH_LOST)
 				{
 					cerr << "onContact::eNOTIFY_TOUCH_LOST" << endl;
+					collisionCheck = false;
 				}
 			}
 		}
@@ -182,12 +188,14 @@ namespace PhysicsEngine
 	class MyScene : public Scene
 	{
 		Box* box2;
+		dSixJoint* paddleJoint;
 		Fans* fan_l;
 		Fans* fan_r;
 		MySimulationEventCallback* my_callback;
 		Paddle* paddle;
 		Plane* plane;
 		PxMaterial* wallMaterial;
+		PxMaterial* frictionMaterial;
 		SideWalls* sideWalls;
 		Sphere* ball;
 		TopWall* topWall;
@@ -195,8 +203,12 @@ namespace PhysicsEngine
 	public:
 		//specify your custom filter shader here
 		//PxDefaultSimulationFilterShader by default
-		MyScene() : Scene() {};
+		MyScene() : Scene() 
+		{
+			filter_shader = CustomFilterShader;
 
+		};
+		int score = 0;
 		///A custom scene class
 		void SetVisualisation()
 		{
@@ -210,7 +222,7 @@ namespace PhysicsEngine
 			SetVisualisation();			
 
 			GetMaterial()->setDynamicFriction(.2f);
-
+			
 			///Initialise and set the customised event callback
 			my_callback = new MySimulationEventCallback();
 			px_scene->setSimulationEventCallback(my_callback);
@@ -220,6 +232,7 @@ namespace PhysicsEngine
 			Add(plane);
 
 			wallMaterial = CreateMaterial(0.0f, 0.0f, 1.0f);
+			frictionMaterial = CreateMaterial(0.0f, 5.0f, 0.0f);
 
 			sideWalls = new SideWalls();
 			sideWalls->Color(PxVec3(0.0f / 255.0f, 250.0f / 255.0f, 140.0f / 255.0f));
@@ -230,13 +243,17 @@ namespace PhysicsEngine
 			topWall = new TopWall(PxTransform(PxVec3(0.0f, 2.5f, -65.0f)));
 			topWall->Color(PxVec3(0.0f / 255.0f, 250.0f / 255.0f, 140.0f / 255.0f));
 			topWall->Material(wallMaterial);
-			topWall->Name("Top Wall");
 			Add(topWall);
+			topWall->SetupFiltering(FilterGroup::ACTOR1, FilterGroup::ACTOR2);
+			topWall->Name("Top Wall");
+			
 
 			ball = new Sphere(PxTransform(PxVec3(0.0f, 1.0f, -35.0f)));
 			ball->Color(PxVec3(120.0f / 255.0f, 50.0f / 255.0f, 235.0f / 255.0f));
-			ball->Name("Puck");
 			Add(ball);
+			ball->SetupFiltering(FilterGroup::ACTOR2, FilterGroup::ACTOR1);
+			ball->Name("Puck");
+			
 
 			fan_l = new Fans(PxTransform(PxVec3(-60.0f, 2.5f, -65.0f)));
 			fan_l->Color(PxVec3(76.0f / 255.0f, 0.0f / 255.0f, 153.0f / 255.0f), 0);
@@ -255,8 +272,16 @@ namespace PhysicsEngine
 			Add(fan_r);
 
 			///Paddle movement
-			paddle = new Paddle(PxTransform(PxVec3(0.0f, 1.0f, -15.0f)));
+			paddle = new Paddle(PxTransform(PxVec3(0.0f, 3.0f, -15.0f)));
 			paddle->Color(PxVec3(200.0f / 255.0f, 180.0f / 255.0f, 50.0f / 255.0f));
+			//paddle->Material(frictionMaterial);
+			paddleJoint = new dSixJoint(NULL, PxTransform(0.0f, 0.0f, 0.0f), paddle, PxTransform(0.0f, 3.0f, -15.0f));
+			paddleJoint->setMotion(PxD6Axis::eX, PxD6Motion::eFREE);
+			paddleJoint->setMotion(PxD6Axis::eY, PxD6Motion::eLIMITED);
+			paddleJoint->setMotion(PxD6Axis::eZ, PxD6Motion::eFREE);
+			paddleJoint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eLOCKED);
+			paddleJoint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLOCKED);
+			paddleJoint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eLOCKED);
 			paddle->Name("Player Paddle");
 			Add(paddle);
 		}
@@ -264,6 +289,7 @@ namespace PhysicsEngine
 		//Custom udpate function
 		virtual void CustomUpdate() 
 		{
+			score = my_callback->score;
 		}
 
 		/// An example use of key release handling

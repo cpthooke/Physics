@@ -19,7 +19,8 @@ namespace VisualDebugger
 	{
 		EMPTY = 0,
 		HELP = 1,
-		PAUSE = 2
+		PAUSE = 2,
+		SCORE = 3
 	};
 
 	//function declarations
@@ -47,6 +48,7 @@ namespace VisualDebugger
 	bool hud_show = true;
 	HUD hud;
 	PxRigidDynamic* paddle;
+	int score;
 
 	//Init the debugger
 	void Init(const char *window_name, int width, int height)
@@ -92,6 +94,7 @@ namespace VisualDebugger
 		//initialise HUD
 		//add an empty screen
 		hud.AddLine(EMPTY, "");
+		hud.Clear();
 		//add a help screen
 		hud.AddLine(HELP, " Simulation");
 		hud.AddLine(HELP, "    F9 - select next actor");
@@ -115,6 +118,8 @@ namespace VisualDebugger
 		hud.AddLine(PAUSE, "");
 		hud.AddLine(PAUSE, "");
 		hud.AddLine(PAUSE, "   Simulation paused. Press F10 to continue.");
+		string textForScore = std::to_string(score);
+		hud.AddLine(SCORE, "Score: " + textForScore);
 		//set font size for all screens
 		hud.FontSize(0.018f);
 		//set font color for all screens
@@ -126,13 +131,16 @@ namespace VisualDebugger
 	{ 
 		glutMainLoop(); 
 	}
-
+	void updateScore()
+	{
+		score = scene->score;
+	}
 	//Render the scene and perform a single simulation step
 	void RenderScene()
 	{
 		//handle pressed keys
 		KeyHold();
-
+		updateScore();
 		//start rendering
 		Renderer::Start(camera->getEye(), camera->getDir());
 
@@ -154,11 +162,12 @@ namespace VisualDebugger
 			if (scene->Pause())
 				hud.ActiveScreen(PAUSE);
 			else
-				hud.ActiveScreen(HELP);
+				hud.ActiveScreen(SCORE);
+				//hud.ActiveScreen(HELP);
 		}
 		else
 			hud.ActiveScreen(EMPTY);
-
+		HUDInit();
 		//render HUD
 		hud.Render();
 
@@ -166,6 +175,7 @@ namespace VisualDebugger
 		Renderer::Finish();
 
 		paddle = scene->GetPaddleActor();
+		//paddle = scene->GetSelectedActor();
 
 		//perform a single simulation step
 		scene->Update(delta_time);
@@ -257,6 +267,9 @@ namespace VisualDebugger
 		case 'M': //down
 			scene->GetSelectedActor()->addForce(PxVec3(0,-1,0)*gForceStrength);
 			break;
+		case 'R': //reset scene
+			scene->Reset();
+			break;
 		default:
 			break;
 		}
@@ -285,7 +298,6 @@ namespace VisualDebugger
 			//reset camera view
 			camera->Reset();
 			break;
-
 			//simulation control
 		case GLUT_KEY_F9:
 			//select next actor
@@ -295,9 +307,17 @@ namespace VisualDebugger
 			//toggle scene pause
 			scene->Pause(!scene->Pause());
 			break;
-		case GLUT_KEY_F12:
-			//resect scene
-			scene->Reset();
+		case GLUT_KEY_RIGHT:
+			paddle->setLinearVelocity(PxVec3(1.0f, 0.0f, 0.0f) * 20);
+			break;
+		case GLUT_KEY_LEFT:
+			paddle->setLinearVelocity(PxVec3(-1.0f, 0.0f, 0.0f) * 20);
+			break;
+		case GLUT_KEY_UP:
+			paddle->setLinearVelocity(PxVec3(0.0f, 0.0f, -1.0f) * 20);
+			break;
+		case GLUT_KEY_DOWN:
+			paddle->setLinearVelocity(PxVec3(0.0f, 0.0f, 1.0f) * 20);
 			break;
 		default:
 			break;
@@ -354,8 +374,8 @@ namespace VisualDebugger
 		mMouseX = x;
 		mMouseY = y;
 
-		if (paddle)
-			paddle->setGlobalPose(PxTransform(PxVec3(-dx, 0.0f, -dy)));
+		//if (paddle)
+		//	paddle->setGlobalPose(PxTransform(PxVec3(-dx, 0.0f, -dy)));
 	}
 
 	void mouseCallback(int button, int state, int x, int y)

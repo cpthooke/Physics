@@ -251,4 +251,23 @@ namespace PhysicsEngine
 			((PxRevoluteJoint*)joint)->setRevoluteJointFlag(PxRevoluteJointFlag::eLIMIT_ENABLED, true);
 		}
 	};
+
+	class dSixJoint : public Joint
+	{
+	public:
+		dSixJoint(Actor* actor0, const PxTransform& localFrame0, Actor* actor1, const PxTransform& localFrame1)
+		{
+			PxRigidActor* px_actor0 = 0;
+			if (actor0)
+				px_actor0 = (PxRigidActor*)actor0->Get();
+
+			joint = PxD6JointCreate(*GetPhysics(), px_actor0, localFrame0, (PxRigidActor*)actor1->Get(), localFrame1);
+			joint->setConstraintFlag(PxConstraintFlag::eVISUALIZATION, true);
+		}
+
+		void setMotion(PxD6Axis::Enum axisLock, PxD6Motion::Enum lockState)
+		{
+			((PxD6Joint*)joint)->setMotion(axisLock, lockState);
+		}
+	};
 }
