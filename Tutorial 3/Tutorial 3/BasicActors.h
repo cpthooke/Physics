@@ -61,6 +61,7 @@ namespace PhysicsEngine
 			: DynamicActor(pose)
 		{
 			CreateShape(PxCapsuleGeometry(dimensions.x, dimensions.y), density);
+			//PxTransform(PxVec3(0.0f, 5.0f, -15.0f));
 		}
 
 		/*void setMotion(int x, int z)

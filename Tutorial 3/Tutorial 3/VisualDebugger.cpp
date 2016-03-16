@@ -355,7 +355,7 @@ namespace VisualDebugger
 		mMouseY = y;
 
 		if (paddle)
-			paddle->setGlobalPose(PxTransform(PxVec3(dx, 1.5f, dy)));
+			paddle->setGlobalPose(PxTransform(PxVec3(-dx, 0.0f, -dy)));
 	}
 
 	void mouseCallback(int button, int state, int x, int y)
