@@ -307,6 +307,11 @@ namespace PhysicsEngine
 		return selected_actor;
 	}
 
+	PxRigidDynamic* Scene::GetPaddleActor()
+	{
+		return paddle_actor;
+	}
+
 	void Scene::SelectNextActor()
 	{
 		std::vector<PxRigidDynamic*> actors(px_scene->getNbActors(PxActorTypeSelectionFlag::eRIGID_DYNAMIC));
@@ -320,17 +325,22 @@ namespace PhysicsEngine
 						HighlightOff(selected_actor);
 						//select the next actor
 						selected_actor = actors[(i+1)%actors.size()];
+						paddle_actor = actors[3];
 						break;
 					}
 			}
 			else
 			{
 				selected_actor = actors[0];
+				paddle_actor = actors[3];
 			}
 			HighlightOn(selected_actor);
 		}
 		else
+		{
 			selected_actor = 0;
+			paddle_actor = 0;
+		}
 	}
 
 	std::vector<PxActor*> Scene::GetAllActors()

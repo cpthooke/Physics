@@ -54,6 +54,22 @@ namespace PhysicsEngine
 		}
 	};
 
+	class Paddle : public DynamicActor
+	{
+	public:
+		Paddle(const PxTransform& pose = PxTransform(PxIdentity), PxVec2 dimensions = PxVec2(2.f, 4.f), PxReal density = 1.f)
+			: DynamicActor(pose)
+		{
+			CreateShape(PxCapsuleGeometry(dimensions.x, dimensions.y), density);
+		}
+
+		/*void setMotion(int x, int z)
+		{
+			int posX = x;
+			int posZ = z;
+		}*/
+	};
+
 	class TopWall : public StaticActor
 	{
 	public:

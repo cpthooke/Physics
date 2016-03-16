@@ -46,6 +46,7 @@ namespace VisualDebugger
 	bool key_state[MAX_KEYS];
 	bool hud_show = true;
 	HUD hud;
+	PxRigidDynamic* paddle;
 
 	//Init the debugger
 	void Init(const char *window_name, int width, int height)
@@ -163,6 +164,8 @@ namespace VisualDebugger
 
 		//finish rendering
 		Renderer::Finish();
+
+		paddle = scene->GetPaddleActor();
 
 		//perform a single simulation step
 		scene->Update(delta_time);
@@ -347,10 +350,12 @@ namespace VisualDebugger
 		int dx = mMouseX - x;
 		int dy = mMouseY - y;
 
-		camera->Motion(dx, dy, delta_time);
-
+		//camera->Motion(dx, dy, delta_time);
 		mMouseX = x;
 		mMouseY = y;
+
+		if (paddle)
+			paddle->setGlobalPose(PxTransform(PxVec3(dx, 1.5f, dy)));
 	}
 
 	void mouseCallback(int button, int state, int x, int y)

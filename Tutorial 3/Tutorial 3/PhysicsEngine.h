@@ -102,6 +102,7 @@ namespace PhysicsEngine
 		bool pause;
 		//selected dynamic actor on the scene
 		PxRigidDynamic* selected_actor;
+		PxRigidDynamic* paddle_actor;
 		//original and modified colour of the selected actor
 		std::vector<PxVec3> sactor_color_orig;
 		//custom filter shader
@@ -143,7 +144,7 @@ namespace PhysicsEngine
 
 		///Get the selected dynamic actor on the scene
 		PxRigidDynamic* GetSelectedActor();
-
+		PxRigidDynamic* GetPaddleActor();
 		///Switch to the next dynamic actor
 		void SelectNextActor();
 

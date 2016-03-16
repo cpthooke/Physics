@@ -182,10 +182,10 @@ namespace PhysicsEngine
 	class MyScene : public Scene
 	{
 		Box* box2;
-		Capsule* paddle;
 		Fans* fan_l;
 		Fans* fan_r;
 		MySimulationEventCallback* my_callback;
+		Paddle* paddle;
 		Plane* plane;
 		PxMaterial* wallMaterial;
 		SideWalls* sideWalls;
@@ -255,10 +255,10 @@ namespace PhysicsEngine
 			Add(fan_r);
 
 			///Paddle movement
-			/*paddle = new Capsule(PxTransform((VisualDebugger.mouseCallBack));
+			paddle = new Paddle(PxTransform(PxVec3(0.0f, 1.0f, -15.0f)));
 			paddle->Color(PxVec3(200.0f / 255.0f, 180.0f / 255.0f, 50.0f / 255.0f));
 			paddle->Name("Player Paddle");
-			Add(paddle);*/
+			Add(paddle);
 		}
 
 		//Custom udpate function
