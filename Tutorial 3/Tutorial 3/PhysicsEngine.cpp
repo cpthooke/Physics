@@ -6,11 +6,11 @@ namespace PhysicsEngine
 	using namespace physx;
 	using namespace std;
 
-	//default error and allocator callbacks
+	///Default error and allocator callbacks
 	PxDefaultErrorCallback gDefaultErrorCallback;
 	PxDefaultAllocator gDefaultAllocatorCallback;
 
-	//PhysX objects
+	///PhysX objects
 	PxFoundation* foundation = 0;
 	debugger::comm::PvdConnection* vd_connection = 0;
 	PxPhysics* physics = 0;
@@ -19,14 +19,12 @@ namespace PhysicsEngine
 	///PhysX functions
 	void PxInit()
 	{
-		//foundation
 		if (!foundation)
 			foundation = PxCreateFoundation(PX_PHYSICS_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
 
 		if(!foundation)
 			throw new Exception("PhysicsEngine::PxInit, Could not create the PhysX SDK foundation.");
 
-		//physics
 		if (!physics)
 			physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale());
 
@@ -39,13 +37,11 @@ namespace PhysicsEngine
 		if(!cooking)
 			throw new Exception("PhysicsEngine::PxInit, Could not initialise the cooking component.");
 
-		//visual debugger
-		if (!vd_connection)
+		if (!vd_connection) //Visual debugger
 			vd_connection = PxVisualDebuggerExt::createConnection(physics->getPvdConnectionManager(), 
 			"localhost", 5425, 100, PxVisualDebuggerExt::getAllConnectionFlags());
 
-		//create a deafult material
-		CreateMaterial();
+		CreateMaterial(); //Create a deafult material
 	}
 
 	void PxRelease()
@@ -85,23 +81,20 @@ namespace PhysicsEngine
 	}
 
 	///Actor methods
-
-	///Constructor
-	PxActor* Actor::Get()
+	PxActor* Actor::Get() //Constructor
 	{
 		return actor;
 	}
 
 	void Actor::Color(PxVec3 new_color, PxU32 shape_index)
 	{
-		//change color of all shapes
-		if (shape_index == -1)
+		if (shape_index == -1) //Change color of all shapes
 		{
 			for (unsigned int i = 0; i < colors.size(); i++)
 				colors[i] = new_color;
 		}
-		//or only the selected one
-		else if (shape_index < colors.size())
+
+		else if (shape_index < colors.size()) //Or only the selected one
 		{
 			colors[shape_index] = new_color;
 		}
@@ -165,10 +158,6 @@ namespace PhysicsEngine
 		std::vector<PxShape*> shape_list = GetShapes(shape_index);
 		for (PxU32 i = 0; i < shape_list.size(); i++)
 			shape_list[i]->setSimulationFilterData(PxFilterData(filterGroup, filterMask,0,0));
-
-		// PxFilterData(word0, word1, 0, 0)
-		// word0 = own ID
-		// word1 = ID mask to filter pairs that trigger a contact callback
 	}
 
 	void Actor::Name(const string& new_name)
@@ -199,8 +188,7 @@ namespace PhysicsEngine
 		PxShape* shape = ((PxRigidDynamic*)actor)->createShape(geometry,*GetMaterial());
 		PxRigidBodyExt::updateMassAndInertia(*(PxRigidDynamic*)actor, density);
 		colors.push_back(default_color);
-		//pass the color pointers to the renderer
-		shape->userData = new UserData();
+		shape->userData = new UserData(); //Pass the color pointers to the renderer
 		for (unsigned int i = 0; i < colors.size(); i++)
 			((UserData*)GetShape(i)->userData)->color = &colors[i];
 	}
@@ -226,8 +214,7 @@ namespace PhysicsEngine
 	{
 		PxShape* shape = ((PxRigidStatic*)actor)->createShape(geometry,*GetMaterial());
 		colors.push_back(default_color);
-		//pass the color pointers to the renderer
-		shape->userData = new UserData();
+		shape->userData = new UserData(); //Pass the color pointers to the renderer
 		for (unsigned int i = 0; i < colors.size(); i++)
 			((UserData*)GetShape(i)->userData)->color = &colors[i];
 	}
@@ -235,8 +222,7 @@ namespace PhysicsEngine
 	///Scene methods
 	void Scene::Init()
 	{
-		//scene
-		PxSceneDesc sceneDesc(GetPhysics()->getTolerancesScale());
+		PxSceneDesc sceneDesc(GetPhysics()->getTolerancesScale()); //Scene
 
 		if(!sceneDesc.cpuDispatcher)
 		{
@@ -246,15 +232,12 @@ namespace PhysicsEngine
 
 		sceneDesc.filterShader = filter_shader;
 		
-		//sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;
-
 		px_scene = GetPhysics()->createScene(sceneDesc);
 
 		if (!px_scene)
 			throw new Exception("PhysicsEngine::Scene::Init, Could not initialise the scene.");
 
-		//default gravity
-		px_scene->setGravity(PxVec3(0.0f, -9.81f, 0.0f));
+		px_scene->setGravity(PxVec3(0.0f, -9.81f, 0.0f)); //Default gravity
 
 		CustomInit();
 
@@ -330,13 +313,10 @@ namespace PhysicsEngine
 			if (selected_actor)
 			{
 				for (unsigned int i = 0; i < actors.size(); i++)
-					if (selected_actor == actors[i])
+					if (selected_actor == actors[i]) //Selects and highlights the next actor
 					{
 						HighlightOff(selected_actor);
-						//select the next actor
 						selected_actor = actors[(i+1)%actors.size()];
-						//top_wall_actor = actors[1];
-						//ball_actor = actors[2];
 						paddle_actor = actors[3];
 						break;
 					}
@@ -344,8 +324,6 @@ namespace PhysicsEngine
 			else
 			{
 				selected_actor = actors[0];
-				//top_wall_actor = actors[1];
-				//ball_actor = actors[2];
 				paddle_actor = actors[3];
 			}
 			HighlightOn(selected_actor);
@@ -368,8 +346,7 @@ namespace PhysicsEngine
 
 	void Scene::HighlightOn(PxRigidDynamic* actor)
 	{
-		//store the original colour and adjust brightness of the selected actor
-		std::vector<PxShape*> shapes(actor->getNbShapes());
+		std::vector<PxShape*> shapes(actor->getNbShapes()); //Store the original colour and adjust brightness of the selected actor
 		actor->getShapes((PxShape**)&shapes.front(), (PxU32)shapes.size());
 
 		sactor_color_orig.clear();
@@ -384,8 +361,7 @@ namespace PhysicsEngine
 
 	void Scene::HighlightOff(PxRigidDynamic* actor)
 	{
-		//restore the original color
-		std::vector<PxShape*> shapes(actor->getNbShapes());
+		std::vector<PxShape*> shapes(actor->getNbShapes()); //Restore the original color
 		actor->getShapes((PxShape**)&shapes.front(), (PxU32)shapes.size());
 
 		for (unsigned int i = 0; i < shapes.size(); i++)

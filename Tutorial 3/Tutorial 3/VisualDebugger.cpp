@@ -91,12 +91,12 @@ namespace VisualDebugger
 
 	void HUDInit()
 	{
-		//initialise HUD
-		//add an empty screen
+		//Adds an empty screen
 		hud.AddLine(EMPTY, "");
 		hud.Clear();
-		//add a help screen
-		hud.AddLine(HELP, " Simulation");
+
+		///Debug keys
+		/*hud.AddLine(HELP, " Simulation");
 		hud.AddLine(HELP, "    F9 - select next actor");
 		hud.AddLine(HELP, "    F10 - pause");
 		hud.AddLine(HELP, "    F12 - reset");
@@ -107,41 +107,42 @@ namespace VisualDebugger
 		hud.AddLine(HELP, "    F7 - render mode");
 		hud.AddLine(HELP, "");
 		hud.AddLine(HELP, " Camera");
-		hud.AddLine(HELP, "    W,S,A,D,Q,Z - forward,backward,left,right,up,down");
 		hud.AddLine(HELP, "    mouse + click - change orientation");
 		hud.AddLine(HELP, "    F8 - reset view");
 		hud.AddLine(HELP, "");
 		hud.AddLine(HELP, " Force (applied to the selected actor)");
-		hud.AddLine(HELP, "    I,K,J,L,U,M - forward,backward,left,right,up,down");
-		//add a pause screen
-		hud.AddLine(PAUSE, "");
-		hud.AddLine(PAUSE, "");
-		hud.AddLine(PAUSE, "");
-		hud.AddLine(PAUSE, "   Simulation paused. Press F10 to continue.");
+		hud.AddLine(HELP, "    I,K,J,L,U,M - forward,backward,left,right,up,down");*/
+
+		///Pause screen
 		string textForScore = std::to_string(score);
-		hud.AddLine(SCORE, "Score: " + textForScore);
-		//set font size for all screens
-		hud.FontSize(0.018f);
-		//set font color for all screens
-		hud.Color(PxVec3(0.f,0.f,0.f));
+		hud.AddLine(SCORE, "Puck Relay\nMovement - Arrow Keys\nPress P to Pause\nPress R to Reset\nScore: " + textForScore);
+		hud.AddLine(PAUSE, "");
+		hud.AddLine(PAUSE, "");
+		hud.AddLine(PAUSE, "");
+		hud.AddLine(PAUSE, "   Game paused. Press P to continue.");
+		hud.FontSize(0.018f); //Sets font
+		hud.Color(PxVec3(0.f,0.f,0.f)); //Sets font colour
 	}
 
-	//Start the main loop
+	///Main game loop
 	void Start()
 	{ 
 		glutMainLoop(); 
 	}
+
 	void updateScore()
 	{
 		score = scene->score;
 	}
-	//Render the scene and perform a single simulation step
+
+	///Render the scene and perform a single simulation step
 	void RenderScene()
 	{
-		//handle pressed keys
+		///Handles keyboard input
 		KeyHold();
 		updateScore();
-		//start rendering
+
+		///Starts rendering
 		Renderer::Start(camera->getEye(), camera->getDir());
 
 		if ((render_mode == DEBUG) || (render_mode == BOTH))
@@ -156,37 +157,33 @@ namespace VisualDebugger
 				Renderer::Render(&actors[0], (PxU32)actors.size());
 		}
 
-		//adjust the HUD state
+		///Adjust the HUD state
 		if (hud_show)
 		{
 			if (scene->Pause())
 				hud.ActiveScreen(PAUSE);
 			else
 				hud.ActiveScreen(SCORE);
-				//hud.ActiveScreen(HELP);
 		}
 		else
 			hud.ActiveScreen(EMPTY);
-		HUDInit();
-		//render HUD
-		hud.Render();
 
-		//finish rendering
+		HUDInit();
+		
+		hud.Render();//Render HUD
 		Renderer::Finish();
 
-		paddle = scene->GetPaddleActor();
-		//paddle = scene->GetSelectedActor();
+		paddle = scene->GetPaddleActor(); //Retrieves paddle information
 
-		//perform a single simulation step
+		///Perform a single simulation step
 		scene->Update(delta_time);
 	}
 
-	//user defined keyboard handlers
+	///User defined keyboard handlers
 	void UserKeyPress(int key)
 	{
 		switch (toupper(key))
 		{
-		//implement your own
 		case 'R':
 			scene->ExampleKeyPressHandler();
 			break;
@@ -199,7 +196,6 @@ namespace VisualDebugger
 	{
 		switch (toupper(key))
 		{
-		//implement your own
 		case 'R':
 			scene->ExampleKeyReleaseHandler();
 			break;
@@ -212,7 +208,7 @@ namespace VisualDebugger
 	{
 	}
 
-	//handle camera control keys
+	///Camera control
 	void CameraInput(int key)
 	{
 		switch (toupper(key))
@@ -240,7 +236,7 @@ namespace VisualDebugger
 		}
 	}
 
-	//handle force control keys
+	///Force control 
 	void ForceInput(int key)
 	{
 		if (!scene->GetSelectedActor())
@@ -248,65 +244,59 @@ namespace VisualDebugger
 
 		switch (toupper(key))
 		{
-			// Force controls on the selected actor
-		case 'I': //forward
+			///Force controls on the selected actor
+		case 'I': //Forward
 			scene->GetSelectedActor()->addForce(PxVec3(0,0,-1)*gForceStrength);
 			break;
-		case 'K': //backward
+		case 'K': //Backward
 			scene->GetSelectedActor()->addForce(PxVec3(0,0,1)*gForceStrength);
 			break;
-		case 'J': //left
+		case 'J': //Left
 			scene->GetSelectedActor()->addForce(PxVec3(-1,0,0)*gForceStrength);
 			break;
-		case 'L': //right
+		case 'L': //Right
 			scene->GetSelectedActor()->addForce(PxVec3(1,0,0)*gForceStrength);
 			break;
-		case 'U': //up
+		case 'U': //Up
 			scene->GetSelectedActor()->addForce(PxVec3(0,1,0)*gForceStrength);
 			break;
-		case 'M': //down
+		case 'M': //Down
 			scene->GetSelectedActor()->addForce(PxVec3(0,-1,0)*gForceStrength);
 			break;
-		case 'R': //reset scene
+		case 'P': //Pause
+			scene->Pause(!scene->Pause());
+			break;
+		case 'R': //Reset
 			scene->Reset();
 			break;
+		case ' ': //Add downward velocity to ball
+			scene->GetSelectedActor()->setLinearVelocity(PxVec3(0, 0, 1) * 5);
 		default:
 			break;
 		}
 	}
 
-	///handle special keys
 	void KeySpecial(int key, int x, int y)
 	{
-		//simulation control
 		switch (key)
 		{
-			//display control
-		case GLUT_KEY_F5:
-			//hud on/off
+			///Debug controls
+		case GLUT_KEY_F5: //HUD on/off
 			hud_show = !hud_show;
 			break;
-		case GLUT_KEY_F6:
-			//shadows on/off
+		case GLUT_KEY_F6: //Shadows on/off
 			Renderer::ShowShadows(!Renderer::ShowShadows());
 			break;
-		case GLUT_KEY_F7:
-			//toggle render mode
+		case GLUT_KEY_F7: //Toggle render mode
 			ToggleRenderMode();
 			break;
-		case GLUT_KEY_F8:
-			//reset camera view
+		case GLUT_KEY_F8: //Reset camera view
 			camera->Reset();
 			break;
-			//simulation control
-		case GLUT_KEY_F9:
-			//select next actor
+		case GLUT_KEY_F9: //Select next actor
 			scene->SelectNextActor();
 			break;
-		case GLUT_KEY_F10:
-			//toggle scene pause
-			scene->Pause(!scene->Pause());
-			break;
+			///Paddle movement
 		case GLUT_KEY_RIGHT:
 			paddle->setLinearVelocity(PxVec3(1.0f, 0.0f, 0.0f) * 20);
 			break;
@@ -324,35 +314,33 @@ namespace VisualDebugger
 		}
 	}
 
-	//handle single key presses
+	///Handle single key presses
 	void KeyPress(unsigned char key, int x, int y)
 	{
-		//do it only once
-		if (key_state[key] == true)
+		if (key_state[key] == true) //Do it only once
 			return;
 
 		key_state[key] = true;
 
-		//exit
-		if (key == 27)
+		if (key == 27) //Exit
 			exit(0);
 
 		UserKeyPress(key);
 	}
 
-	//handle key release
-	void KeyRelease(unsigned char key, int x, int y)
+	void KeyRelease(unsigned char key, int x, int y) //Handle key release
+
 	{
 		key_state[key] = false;
 		UserKeyRelease(key);
 	}
 
-	//handle holded keys
+	///Handle held keys
 	void KeyHold()
 	{
 		for (int i = 0; i < MAX_KEYS; i++)
 		{
-			if (key_state[i]) // if key down
+			if (key_state[i])
 			{
 				CameraInput(i);
 				ForceInput(i);
@@ -361,7 +349,7 @@ namespace VisualDebugger
 		}
 	}
 
-	///mouse handling
+	///Mouse handling
 	int mMouseX = 0;
 	int mMouseY = 0;
 
@@ -370,12 +358,8 @@ namespace VisualDebugger
 		int dx = mMouseX - x;
 		int dy = mMouseY - y;
 
-		//camera->Motion(dx, dy, delta_time);
 		mMouseX = x;
 		mMouseY = y;
-
-		//if (paddle)
-		//	paddle->setGlobalPose(PxTransform(PxVec3(-dx, 0.0f, -dy)));
 	}
 
 	void mouseCallback(int button, int state, int x, int y)
@@ -394,7 +378,7 @@ namespace VisualDebugger
 			render_mode = NORMAL;
 	}
 
-	///exit callback
+	///Exit callback
 	void exitCallback(void)
 	{
 		delete camera;

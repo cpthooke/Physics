@@ -25,7 +25,7 @@ namespace PhysicsEngine
 
 	///Get the specified material
 	PxMaterial* GetMaterial(PxU32 index=0);
-
+	
 	///Create a new material
 	PxMaterial* CreateMaterial(PxReal sf=.0f, PxReal df=.0f, PxReal cr=.0f);
 
